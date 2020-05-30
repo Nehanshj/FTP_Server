@@ -1,5 +1,5 @@
 package com.project.nightkoders.ftp;
-
+//Android internal packages
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -25,10 +25,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
-
+//Directory chooser
 import net.rdrei.android.dirchooser.DirectoryChooserActivity;
 import net.rdrei.android.dirchooser.DirectoryChooserConfig;
-
+//Apache's FTP Server packages
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.Authority;
