@@ -58,24 +58,24 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView mAddrReg, mAddriOS, mPrompt, mPasswdDisp, mUserDisp, mDirAddress;
-    EditText mUser, mPasswd;
-    Switch mTogglePass;
-    LinearLayout mAddr1, mAddr2;
-    TextInputLayout mUserParent, mPasswdParent;
-    Button mDirChooser;
-    static String pass;
+    TextView mAddrReg, mAddriOS, mPrompt, mPasswdDisp, mUserDisp, mDirAddress; // Here we are declaring the text view items sych as address, password, username and directory address
+    EditText mUser, mPasswd; // Kunalandroid : This is and editable username and password field
+    Switch mTogglePass; // This is a toggle to show or hide password
+    LinearLayout mAddr1, mAddr2; // These are local address and remote address
+    TextInputLayout mUserParent, mPasswdParent; // These are the labels for the username and password
+    Button mDirChooser; // This is the directory chooser button
+    static String pass; // This is used to match the successful authentication
 
-    final int MY_PERMISSIONS_REQUEST = 2203;
-    final int REQUEST_DIRECTORY = 2108;
+    final int MY_PERMISSIONS_REQUEST = 2203; // Nehanshj : Android App permission from https://developer.android.com/training/permissions/requesting
+    final int REQUEST_DIRECTORY = 2108; // Nehanshj : Android App permission from https://developer.android.com/training/permissions/requesting
 
-    FtpServerFactory serverFactory = new FtpServerFactory();
-    ListenerFactory factory = new ListenerFactory();
-    PropertiesUserManagerFactory userManagerFactory = new PropertiesUserManagerFactory();
+    FtpServerFactory serverFactory = new FtpServerFactory(); // This is apache ftpserverfactory used to develop this application
+    ListenerFactory factory = new ListenerFactory(); //FtpServer listner
+    PropertiesUserManagerFactory userManagerFactory = new PropertiesUserManagerFactory(); // FTP Users manager
     FtpServer finalServer;
     Toolbar toolbar;
 
-    boolean justStarted = true;
+    boolean justStarted = true; // a boolean to check if the server has started or not
 
     @SuppressLint("AuthLeak")
     @Override
@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        // Checking and storing the credentials of the server
         mTogglePass = findViewById(R.id.togglePass);
         mTogglePass.setEnabled(false);
         mTogglePass.setChecked(false);
@@ -113,19 +114,20 @@ public class MainActivity extends AppCompatActivity {
 
         mAddrReg = findViewById(R.id.addrReg);
         mAddr2 = findViewById(R.id.addr2);
-        mAddrReg.setText(String.format("ftp://%s:2121", wifiIpAddress(this)));
+        mAddrReg.setText(String.format("ftp://%s:2121", wifiIpAddress(this))); // Setting a listner on the FTP port
 
         mAddriOS = findViewById(R.id.addriOS);
         mAddr1 = findViewById(R.id.addr1);
-        mAddriOS.setText(String.format("ftp://ftp:ftp@%s:2121", wifiIpAddress(this)));
+        mAddriOS.setText(String.format("ftp://ftp:ftp@%s:2121", wifiIpAddress(this))); // Setting the listner in the iOS format
 
         mDirAddress = findViewById(R.id.dirAddress);
         mDirChooser= findViewById(R.id.dirChooser);
 
         mDirChooser.setOnClickListener(view -> {
-            final Intent chooserIntent = new Intent(this, DirectoryChooserActivity.class);
+            final Intent chooserIntent = new Intent(this, DirectoryChooserActivity.class); // Directory Choser Button Function
 
-            final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
+            // Kunalandroid : It chooses the directory path in the android using https://github.com/passy/Android-DirectoryChooser
+            final DirectoryChooserConfig config = DirectoryChooserConfig.builder() 
                     .newDirectoryName("New Folder")
                     .allowNewDirectoryNameModification(true)
                     .build();
@@ -135,11 +137,11 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(chooserIntent, REQUEST_DIRECTORY);
         });
 
-        finalServer = serverFactory.createServer();
+        finalServer = serverFactory.createServer(); // Apache FTP server API
 
         toolbar.setOnClickListener(view -> {
             try {
-                if (checkWifiOnAndConnected(this) || wifiHotspotEnabled(this)) {
+                if (checkWifiOnAndConnected(this) || wifiHotspotEnabled(this)) { // Checking if Wifi is ON and Mobile Hotspot is enabled
                     MainActivity.this.serverControl();
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -169,6 +171,9 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     }
 
+    // Nehanshj : Checking and browsing the remote device directory by granting the permission to the android app
+    // https://developer.android.com/training/permissions/requesting
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -197,6 +202,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Nehanshj : Stopping or Aborting the server if power button is pressed
+
     @Override
     protected void onDestroy() {
         try {
@@ -206,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onDestroy();
     }
+    // Kunalandroid : Adding Device Listener to connect the two devices for data transfer
 
     private void setupStart(String username, String password, String subLoc) throws FileNotFoundException {
         factory.setPort(2121);
@@ -238,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (FtpException e1) {
             e1.printStackTrace();
         }
-
+        // Kunalandroid : Apache Factory FTP API
         serverFactory.setUserManager(um);
         Map<String, Ftplet> m = new HashMap<>();
         m.put("miaFtplet", new Ftplet()
@@ -280,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
         });
         serverFactory.setFtplets(m);
     }
-
+    // Kunalandroid : Setting Local Static Wifi Address i.e 192.168.43.1
     private String wifiIpAddress(Context context) {
         try {
             if (wifiHotspotEnabled(context)) {
@@ -293,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return Utils.getIPAddress(true);
     }
-
+    // Checking if wifi hotspot is enabled, if not the turn the hotspot on automatically
     private boolean wifiHotspotEnabled(Context context) throws InvocationTargetException, IllegalAccessException {
         WifiManager manager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         Method method = null;
@@ -321,6 +329,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    // Nehanshj : If back button is pressed in android device then the FTP server will be stopped/killed
     @Override
     public void onBackPressed() {
         finalServer.stop();
@@ -328,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorRed, null));
         super.onBackPressed();
     }
-
+    // Final server control board. If the server is stopped then all the credentials are reset to empty
     void serverControl() {
 
         if (finalServer.isStopped()) {
@@ -362,7 +372,7 @@ public class MainActivity extends AppCompatActivity {
 
             mPasswdParent.setVisibility(View.INVISIBLE);
             mPasswdDisp.setVisibility(View.VISIBLE);
-
+            // Startup the server once again after the user has pressed on the app icon in the app drawer
             try {
                 setupStart(user, passwd, subLoc);
             } catch (FileNotFoundException fnfe) {
@@ -390,7 +400,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             toolbar.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorGreen, null));
-
+            // Here we are setting colors when the server is running and when the server is off.
             mPrompt.setVisibility(View.VISIBLE);
             mAddr1.setVisibility(View.VISIBLE);
             mAddr2.setVisibility(View.VISIBLE);
@@ -407,7 +417,7 @@ public class MainActivity extends AppCompatActivity {
             mAddr2.setVisibility(View.VISIBLE);
 
         } else {
-
+            // Here the color is changed to red after the server has been stopped
             finalServer.suspend();
             toolbar.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorRed, null));
 
