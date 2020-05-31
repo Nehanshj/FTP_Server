@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Swallow Server</string>
+    <string name="app_name">AU FTP Server</string>
     <string name="action_settings">Settings</string>
     <string name="def_addr_ios">ftp://ftp:ftp@000.000.000.000:2121</string>
     <string name="def_addr_reg">ftp://000.000.000.000:2121</string>
